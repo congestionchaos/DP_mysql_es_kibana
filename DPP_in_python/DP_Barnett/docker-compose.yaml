@@ -1,0 +1,60 @@
+version: "3"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.1
+    environment:
+      - node.name=es-node
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.ml.enabled=false
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=test_mysql_user
+      - MYSQL_PASSWORD=secretpassword
+      - MYSQL_DATABASE=DP_Database
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+    depends_on:
+      - mysql
+    command: >
+      bin/elasticsearch
+      --quiet
+      --http.host=0.0.0.0
+      --plugin-path=/usr/share/elasticsearch/plugins/analysis-mysql-8.6.1.zip
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.6.1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+     - elasticsearch
+    networks:
+      - elk
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_USER: test_mysql_user
+      MYSQL_PASSWORD: secretpassword
+      MYSQL_DATABASE: DP_Database
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - elk
+
+volumes:
+  esdata:
+
+networks:
+  elk:
