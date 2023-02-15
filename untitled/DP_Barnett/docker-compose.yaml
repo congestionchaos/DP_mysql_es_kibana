@@ -9,9 +9,9 @@ services:
       - xpack.ml.enabled=false
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
-      - MYSQL_USER=your_mysql_user
-      - MYSQL_PASSWORD=your_mysql_password
-      - MYSQL_DATABASE=your_mysql_database
+      - MYSQL_USER=test_mysql_user
+      - MYSQL_PASSWORD=secretpassword
+      - MYSQL_DATABASE=DP_Database
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:
